@@ -239,106 +239,108 @@ do -- VRCQM.UIManager
 	script.Name = "UIManager"
 	local function module_script()
 		local module = {
-			SelectTab = function(tabname)
-				for i,v in ipairs(script.Parent.Content:GetChildren()) do
-					if v.Name ~= tabname then
-						v.Visible = false
-					end
-				end
-				script.Parent.Content[tabname].Visible = true
-			end,
-			WaitForInitialization = function()
-				for i,v in script.Parent:GetDescendants() do
-					repeat wait() until v.IsLoaded
-				end
-			end,
-			AddPage = function(pagename, title, issubmenu, pageicon, pagetooltip)
-				local pageclone = script.Parent.Content.PagePrefab:Clone()
-				pageclone.Parent = script.Parent.Content
+            SelectTab = function(tabname)
+                for i,v in ipairs(script.Parent.Content:GetChildren()) do
+                    if v.Name ~= tabname then
+                        v.Visible = false
+                    end
+                end
+                script.Parent.Content[tabname].Visible = true
+            end,
+            WaitForInitialization = function()
+                for i,v in script.Parent:GetDescendants() do
+                    v.Parent:WaitForChild(v.Name)
+                end
+            end,
+            AddPage = function(pagename, title, issubmenu, pageicon, pagetooltip)
+                local pageclone = script.Parent.Content.PagePrefab:Clone()
+                pageclone.Name = pagename
+                pageclone.Parent = script.Parent.Content
                 local titleroutine = coroutine.create(function()
                     while true do
                         if pageclone.Visible then
-                         script.Parent.Title.WindowName.Text = title
+                            script.Parent.Title.WindowName.Text = title
                         end
-                         wait()
+                        wait()
                     end
                 end)
                 coroutine.resume(titleroutine)
-				if not issubmenu then
-					local tabbutton = script.Parent.Tabs.TabPrefab:Clone()
-					tabbutton.Parent = script.Parent.Tabs
-					tabbutton.MouseButton1Click:Connect(function()
-						for i,v in ipairs(script.Parent.Content:GetChildren()) do
-							if v.Name ~= pagename then
-								v.Visible = false
-							end
-						end
-						script.Parent.Content[pagename].Visible = true
-					end)
-					tabbutton.MouseEnter:Connect(function()
-						local tt = script.Parent.ToolTip.TextLabel
-						tt.Text = pagetooltip
-						tt.Parent.Visible = true
-					end)
-					tabbutton.MouseLeave:Connect(function()
-						local tt = script.Parent.ToolTip
-						tt.Visible = false
-					end)
-				end
-				pageclone.Visible = true
-				local pagefuncs = {
-					NewSection = function(title)
-						local sectioninst = pageclone.Section:Clone()
-						sectioninst.Parent = pageclone
-						sectioninst.SectionName.Text = title
-						local sectcontent = sectioninst.Frame
-						local sectfuncs = {
-							AddButton = function(buttontext, tooltip, callback)
-								local btnclone = sectioninst.Frame.TextButton:Clone()
-								btnclone.Text = buttontext
-								btnclone.Parent = sectcontent
-								btnclone.MouseButton1Click:Connect(callback)
-								btnclone.Visible = true
-								btnclone.MouseEnter:Connect(function()
-									script.Parent.ToolTip.TextLabel.Text = tooltip
-									script.Parent.ToolTip.Visible = true
-								end)
-								btnclone.MouseLeave:Connect(function()
-									script.Parent.ToolTip.Visible = false
-								end)
-								return btnclone
-							end,
-							AddLabel = function(text, tooltip)
-								local labelclone = sectcontent.TextLabel:Clone()
-								labelclone.Parent = sectcontent
-								labelclone.Text = text
-								labelclone.Visible = true
-								labelclone.MouseEnter:Connect(function()
-									script.Parent.ToolTip.TextLabel.Text = tooltip
-									script.Parent.ToolTip.Visible = true
-								end)
-								labelclone.MouseLeave:Connect(function()
-									script.Parent.ToolTip.Visible = false
-								end)
-								return labelclone
-							end,
-						}
-						sectioninst.Visible = true
-						return sectfuncs
-					end,
-					GetPageInstance = function()
-						return pageclone
-					end,
-				}
-				pageclone.Visible = true
-				return pagefuncs
-			end,
-			SetUIName = function(text)
-				script.Parent.Title.WindowName.Text = text
-			end,
-		}
-		moduletoreturn = module
-		return module
+                if not issubmenu then
+                    local tabbutton = script.Parent.Tabs.TabPrefab:Clone()
+                    tabbutton.Parent = script.Parent.Tabs
+                    tabbutton.MouseButton1Click:Connect(function()
+                        for i,v in ipairs(script.Parent.Content:GetChildren()) do
+                            if v.Name ~= pagename and v:IsA("Frame") or v:IsA("ScrollingFrame") then
+                                v.Visible = false
+                            end
+                        end
+                        script.Parent.Content[pagename].Visible = true
+                    end)
+                    tabbutton.MouseEnter:Connect(function()
+                        local tt = script.Parent.ToolTip.TextLabel
+                        tt.Text = pagetooltip
+                        tt.Parent.Visible = true
+                    end)
+                    tabbutton.MouseLeave:Connect(function()
+                        local tt = script.Parent.ToolTip
+                        tt.Visible = false
+                    end)
+                    tabbutton.Visible = true
+                end
+                pageclone.Visible = true
+                local pagefuncs = {
+                    NewSection = function(title)
+                        local sectioninst = pageclone.Section:Clone()
+                        sectioninst.Parent = pageclone
+                        sectioninst.SectionName.Text = title
+                        local sectcontent = sectioninst.Frame
+                        local sectfuncs = {
+                            AddButton = function(buttontext, tooltip, callback)
+                                local btnclone = sectioninst.Frame.TextButton:Clone()
+                                btnclone.Text = buttontext
+                                btnclone.Parent = sectcontent
+                                btnclone.MouseButton1Click:Connect(callback)
+                                btnclone.Visible = true
+                                btnclone.MouseEnter:Connect(function()
+                                    script.Parent.ToolTip.TextLabel.Text = tooltip
+                                    script.Parent.ToolTip.Visible = true
+                                end)
+                                btnclone.MouseLeave:Connect(function()
+                                    script.Parent.ToolTip.Visible = false
+                                end)
+                                return btnclone
+                            end,
+                            AddLabel = function(text, tooltip)
+                                local labelclone = sectcontent.TextLabel:Clone()
+                                labelclone.Parent = sectcontent
+                                labelclone.Text = text
+                                labelclone.Visible = true
+                                labelclone.MouseEnter:Connect(function()
+                                    script.Parent.ToolTip.TextLabel.Text = tooltip
+                                    script.Parent.ToolTip.Visible = true
+                                end)
+                                labelclone.MouseLeave:Connect(function()
+                                    script.Parent.ToolTip.Visible = false
+                                end)
+                                return labelclone
+                            end,
+                        }
+                        sectioninst.Visible = true
+                        return sectfuncs
+                    end,
+                    GetPageInstance = function()
+                        return pageclone
+                    end,
+                }
+                pageclone.Visible = true
+                return pagefuncs
+            end,
+            SetUIName = function(text)
+                script.Parent.Title.WindowName.Text = text
+            end,
+        }
+        moduletoreturn = module
+        return module
 	end
 	fake_module_scripts[script] = module_script
 end
