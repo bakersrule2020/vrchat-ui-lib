@@ -343,4 +343,4 @@ do -- VRCQM.UIManager
 	end
 	fake_module_scripts[script] = module_script
 end
-return require(VRCQM.UIManager)
+return require(VRCQM:WaitForChild("UIManager"))
