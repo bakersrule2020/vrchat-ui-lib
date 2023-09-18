@@ -339,9 +339,8 @@ do -- VRCQM.UIManager
                 script.Parent.Title.WindowName.Text = text
             end,
         }
-        moduletoreturn = module
         return module
 	end
 	fake_module_scripts[script] = module_script
 end
-return moduletoreturn
+return require(VRCQM.UIManager)
