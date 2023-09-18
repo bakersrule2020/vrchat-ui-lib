@@ -255,6 +255,15 @@ do -- VRCQM.UIManager
 			AddPage = function(pagename, title, issubmenu, pageicon, pagetooltip)
 				local pageclone = script.Parent.Content.PagePrefab:Clone()
 				pageclone.Parent = script.Parent.Content
+                local titleroutine = coroutine.create(function()
+                    while true do
+                        if pageclone.Visible then
+                         script.Parent.Title.WindowName.Text = title
+                        end
+                         wait()
+                    end
+                end)
+                coroutine.resume(titleroutine)
 				if not issubmenu then
 					local tabbutton = script.Parent.Tabs.TabPrefab:Clone()
 					tabbutton.Parent = script.Parent.Tabs
@@ -330,7 +339,6 @@ do -- VRCQM.UIManager
 		}
 		moduletoreturn = module
 		return module
-		
 	end
 	fake_module_scripts[script] = module_script
 end
