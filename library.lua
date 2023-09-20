@@ -8,13 +8,19 @@ local AssetService = game:GetService("AssetService")
 local success, objects = pcall(function()
     return AssetService:GetObjects(assetId)
 end)
-
+local objtoreturn = nil
 if success then
     -- Assuming the VRCUI object is in the first index of the objects table
     local vrcui = objects[1]
 
     -- Parent the VRCUI to CoreGui
     vrcui.Parent = game:GetService("CoreGui")
+    objtoreturn = vrcui
 else
     warn("Failed to load objects: " .. objects)
+end
+if not objtoreturn == nil then
+    return objtoreturn
+else
+    error("Failed to get the UI object!")
 end
